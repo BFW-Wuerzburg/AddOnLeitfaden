@@ -403,7 +403,7 @@ git clone https://github.com/nvaccess/addontemplate
 - Legt einen neuen Ordner `addontemplate` an.  
 - Dieser Ordner ist bereits ein vollständiges Git‑Repository (inkl. `.git`).
 
-Sie können nun:
+Sie können nun eingeben:
 
 ```cmd
 cd addontemplate
@@ -422,6 +422,8 @@ Optional: NVDA‑Quellcode klonen:
 git clone https://github.com/nvaccess/nvda
 ```
 
+So laden Sie sich die kompletten Quellen von NVDA herunter.
+
 ---
 
 ## 6. Die Vorlage mit Add-on-Code befüllen
@@ -429,10 +431,110 @@ git clone https://github.com/nvaccess/nvda
 Jetzt beginnt die eigentliche Entwicklung.
 
 Beispielidee:  
-Ein Add-on für den Windows‑Editor (Notepad), das per **Strg+Umschalt+Z** die aktuelle Zeilennummer ansagt, wenn sich der Fokus im Schreibbereich befindet.
+Ein Add-on für den Windows‑Editor (Notepad), das per **Strg+Umschalt+Z** die aktuelle Zeilennummer ansagt, wenn sich der Fokus im Schreibbereich befindet. Hier der entsprechende Python-Code:
 
 ```python
-# Hier wird  der eigentliche Add-on-Code stehen.
+"""NVDA App-Modul für Windows Notepad.
+
+Dieses Modul erweitert NVDA um spezielle Funktionen für den Windows-Editor (notepad.exe).
+Es ermöglicht das Ansagen der aktuellen Zeilennummer aus der Statusleiste mittels
+Tastenkombination Strg+Umschalt+Z.
+
+Optimiert für: %windir%\\system32\\notepad.exe
+Autor: Rainer Brell <nvda@bfw-wuerzburg.de>
+Lizenz: GNU General Public License
+Code ist pyright und ruff konform 
+"""
+
+from typing import Optional
+import re
+import addonHandler
+import api
+import appModuleHandler
+import ui
+from controlTypes import Role
+from scriptHandler import script
+
+# Initialisiert das Übersetzungssystem für mehrsprachige Unterstützung
+addonHandler.initTranslation()
+
+class AppModule(appModuleHandler.AppModule):
+	"""App-Modul für Windows Notepad (notepad.exe).
+
+	Stellt Funktionalität bereit, um Zeilennummern aus der Statusleiste anzusagen.
+	Diese Klasse wird automatisch von NVDA geladen, wenn notepad.exe im Fokus ist.
+	"""
+
+	# Translators: Name of the category for the key assignment dialog
+	scriptCategory = _("Notepad - Windows Editor")
+
+	def __init__(self, *args, **kwargs) -> None:
+		"""Initialisiert das App-Modul.
+
+		Wird von NVDA aufgerufen, wenn das App-Modul geladen wird.
+		Ruft die Initialisierung der Basisklasse auf.
+
+		Args:
+			*args: Positionsargumente für die Basisklasse
+			**kwargs: Schlüsselwortargumente für die Basisklasse
+		"""
+		super().__init__(*args, **kwargs)
+
+	def terminate(self) -> None:
+		"""Beendet das App-Modul ordnungsgemäß.
+
+		Wird von NVDA aufgerufen, wenn das App-Modul entladen wird
+		(z.B. wenn Notepad geschlossen wird). Räumt Ressourcen auf.
+		"""
+		super().terminate()
+
+	@script(
+		# Translators: Description for the function to display the line number
+		description=_("Aktuelle Zeilennummer aus der Statusleiste ansagen"),
+		gesture="kb:control+shift+z",  # Tastenkombination: Strg+Umschalt+Z
+		speakOnDemand=True,  # Sprrechen, wenn "Sprachmodus bei Bedarf" steht 
+	)
+	def script_current_line_number(self, gesture) -> None:  # noqa: ARG002
+		"""Sagt die aktuelle Zeilennummer aus der Statusleiste an.
+
+		Diese Funktion wird ausgeführt, wenn der Benutzer Strg+Umschalt+Z drückt.
+		Sie sucht nach der Statusleiste im Notepad-Fenster und extrahiert die
+		Zeilennummer aus dem Statusleistentext.
+
+		Args:
+			gesture: Das Tastatur-Gesture-Objekt (wird hier nicht verwendet,
+					aber von NVDA erwartet)
+		"""
+		# das aktuelle Vordergrundfenster (das Notepad-Fenster)
+		fg = api.getForegroundObject()
+
+		# Versuche, die Statusleiste zu finden (sie ist das letzte Kind-Element)
+		statusbar: Optional[api.TextInfo] = fg.simpleLastChild
+
+		# Prüfe, ob eine Statusleiste gefunden wurde und ob es wirklich eine ist
+		if statusbar and statusbar.role == Role.STATUSBAR:
+			# Hole den Text aus der Statusleiste
+			# (z.B. "Zeile 15, Spalte 3" oder "Ln 15, Col 3")
+			text = api.getStatusBarText(statusbar)
+
+			# Suche nach der ersten Zahl im String mittels regulärem Ausdruck
+			# \d+ bedeutet: eine oder mehrere Ziffern
+			match = re.search(r"\d+", text)
+
+			if match:
+				# Extrahiere die gefundene Zahl (die Zeilennummer)
+				line = match.group()
+
+				# Translators: Message for the current line number
+				# {line} wird durch die tatsächliche Zeilennummer ersetzt
+				ui.message(_("line {line}").format(line=line))
+			else:
+				# Translators: Error message if no line number was found
+				ui.message(_("No line number found."))
+		else:
+			# Wenn keine Statusleiste gefunden wurde
+			# Translators: Error message if there is no status bar
+			ui.message(_("No status bar found."))
 ```
 
 ---
