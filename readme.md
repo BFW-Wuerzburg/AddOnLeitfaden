@@ -1,7 +1,8 @@
 # Ein Add-on in den NVDA Store bringen  
 **Von der lokalen Entwicklung bis zur Einreichung bei NV Access**
 
-Diese Anleitung führt Schritt für Schritt durch den gesamten Prozess:  
+Diese Anleitung ist für fortgeschrittene Anwender und führt Schritt für Schritt durch den gesamten Prozess: 
+
 Vom Einrichten der Entwicklungsumgebung über das Erstellen eines GitHub‑Repositories bis hin zur finalen Einreichung des Add-ons für den NVDA Store.
 
 ---
@@ -28,7 +29,7 @@ Vom Einrichten der Entwicklungsumgebung über das Erstellen eines GitHub‑Repos
 
 ## 1. Voraussetzungen installieren
 
-Für die Add-on‑Entwicklung werden folgende Werkzeuge benötigt:
+Für die Add-on‑Einreichung werden folgende Werkzeuge benötigt:
 
 - **Python** als Entwicklungsumgebung  
 - **Git** für Versionsverwaltung  
@@ -36,7 +37,7 @@ Für die Add-on‑Entwicklung werden folgende Werkzeuge benötigt:
 
 Wir installieren Python **3.13**, um für NVDA 2026 und höher gerüstet zu sein.
 
-Unter Windows 11 nutzen wir den Paketmanager **winget**:
+Unter Windows 11 nutzen wir den Paketmanager **winget** zum einfachen Installieren:
 
 ```cmd
 winget install Python.Python.3.13
@@ -50,7 +51,7 @@ winget install github.cli
 - Die Installation läuft ohne weitere Rückfragen („silent“).  
 - Wenn Sie mehr Kontrolle möchten, können Sie `install` durch `download` ersetzen und die Installationsdateien manuell starten.
 
-Ein Neustart nach der Installation ist empfehlenswert.
+Ein Rechner-Neustart nach der Installation ist empfehlenswert.
 
 ---
 
@@ -179,7 +180,7 @@ Typischer Ablauf:
 
 ---
 
-#### `git commit` – einen Schnappschuss speichern
+#### `git commit` – aktuellen Zustand speichern
 
 ```cmd
 git commit -m "Add readme"
@@ -187,7 +188,7 @@ git commit -m "Add readme"
 
 **Was macht `git commit`?**
 
-- Ein Commit ist ein **Schnappschuss** des aktuellen Projektzustands.  
+- Erstellt einen Speicherpunkt, auf den ggf. später zurückgesprungen werden kann.
 - Alle Dateien, die vorher mit `git add` in den Staging‑Bereich gelegt wurden, werden in diesem Commit gespeichert.  
 - Die Option `-m "Nachricht"` fügt eine kurze Beschreibung hinzu, z. B. was geändert wurde.
 
@@ -204,6 +205,8 @@ nothing to commit, working tree clean
 ```
 
 Das bedeutet: Es gibt keine ungespeicherten Änderungen mehr.
+
+Git commit speichert dabei nicht jedes Mal das komplette Projekt neu, sondern nur die Änderungen in der git History – sehr effizient.
 
 ---
 
@@ -261,7 +264,7 @@ git help commit
 Bis jetzt existiert Ihr Projekt nur lokal.  
 Nun verbinden wir es mit GitHub, damit es online verfügbar ist.
 
-### GitHub CLI anmelden
+### GitHub anmelden
 
 ```cmd
 gh auth login
@@ -338,7 +341,7 @@ gh repo list
 
 **Was macht `gh repo list`?**
 
-- Zeigt alle Repositories des aktuell angemeldeten GitHub‑Kontos.
+- Zeigt alle Repositories des aktuell angemeldeten GitHub‑Kontos an.
 
 Mit Benutzername:
 
@@ -348,7 +351,7 @@ gh repo list nvdaes
 gh repo list bfw-wuerzburg
 ```
 
-- Zeigt alle öffentlichen Repositories eines anderen Accounts.  
+- Zeigt alle öffentlichen Repositories eines anderen Accounts an.  
 - Praktisch, um sich Projekte von NV Access, Community‑Organisationen oder Firmen anzusehen.
 
 ---
@@ -450,6 +453,5 @@ Wenn das Add-on stabil läuft, folgt die Einreichung bei NV Access:
 
 ## Zusätzliche Tipps und Links
 
-- Link zur NVDA‑Add-on‑Dokumentation  
-- Link zu NV Access Richtlinien für Add-ons  
-- Beispiele anderer Add-ons als Inspiration  
+- [Entwickler-Leitfaden](https://download.nvaccess.org/documentation/developerGuide.html)
+- [entwickler-Wiki](https://github.com/nvdaaddons/DevGuide/wiki/NVDA-Add-on-Development-Guide)
