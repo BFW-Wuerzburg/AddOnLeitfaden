@@ -9,79 +9,117 @@ Vom Einrichten der Entwicklungsumgebung über das Erstellen eines GitHub‑Repos
 
 ## Inhaltsverzeichnis
 
-- [1. Voraussetzungen installieren](#1-voraussetzungen-installieren)  
-- [2. GitHub-Konto erstellen](#2-github-konto-erstellen)  
-- [3. Lokales Repository anlegen](#3-lokales-repository-anlegen)  
-  - [Git-Identität konfigurieren](#git-identität-konfigurieren)  
+- [1. Voraussetzungen](#1-Voraussetzungen)
+- [1.1 programme installieren](#1-1-Programme-installieren)  
+- [1.2 GitHub-Konto erstellen und verbinden](#1-2-github-konto-erstellen-und-verbinden)  
+- [1.3 Git-Identität konfigurieren](#1-3-git-identität-konfigurieren)  
+- [1.4 Python-Module und Gettext](1-4-python-Module-und-gettext)
+- [2. Lokales Repository anlegen](#2-lokales-repository-anlegen)  
   - [Git-Repository initialisieren und bearbeiten](#git-repository-initialisieren-und-bearbeiten)  
   - [Wichtige Git-Befehle im Überblick](#wichtige-git-befehle-im-überblick)  
-- [4. Repository auf GitHub hochladen](#4-repository-auf-github-hochladen)  
-  - [GitHub CLI anmelden](#github-cli-anmelden)  
+- [3. Repository auf GitHub hochladen](#3-repository-auf-github-hochladen)  
   - [Neues GitHub-Repository erstellen](#neues-github-repository-erstellen)  
   - [Wichtige GitHub-CLI-Befehle im Überblick](#wichtige-github-cli-befehle-im-überblick)  
-- [5. NVDA-Add-on-Vorlage lokal einrichten](#5-nvda-add-on-vorlage-lokal-einrichten)  
-- [6. Die Vorlage mit Add-on-Code befüllen](#6-die-vorlage-mit-add-on-code-befüllen)  
+- [4. NVDA-Add-on-Vorlage klonen](#4-nvda-add-on-vorlage-klonen)  
+- [5. Die Vorlage mit Add-on-Code befüllen](#5-die-vorlage-mit-add-on-code-befüllen)  
 - [7. Ein lokales Add-on erstellen](#7-ein-lokales-add-on-erstellen)  
 - [8. Das Add-on einreichen](#8-das-add-on-einreichen)  
-- [Zusätzliche Tipps und Links](#zusätzliche-tipps-und-links)
+- [9. Zusätzliche Tipps und Links](#zusätzliche-tipps-und-links)
 
 ---
 
-## 1. Voraussetzungen installieren
+## 1. Voraussetzungen
 
-Für die Add-on‑Einreichung werden folgende Werkzeuge benötigt:
+In diesem Kapitel schaffen wir die Voraussetzungen. Wir installieren Programme, richten GitHub und git ein und fügen Module für python hinzu, die uns später helfen werden.
+
+All diese Aufgaben müssen nur einmal gemacht werden.
+
+--- 
+
+### 1.1. Programme installieren
+
+Für unser Vorhaben werden folgende Werkzeuge empfohlen:
 
 - **Python** als Entwicklungsumgebung  
 - **Git** für Versionsverwaltung  
 - **GitHub CLI** zur Interaktion mit GitHub  
+- **Poedit und gettext-Tools** für die Übersetzung 
+- **Microsoft Visual Studio Code ** Zur bearbeitung von Code, ist nicht zwingend notwendig
 
 Wir installieren Python **3.13**, um für NVDA 2026 und höher gerüstet zu sein.
 
-Unter Windows 11 nutzen wir den Paketmanager **winget** zum einfachen Installieren:
+Unter Windows 11 nutzen wir den Paketmanager **winget** zum einfachen Installieren. Verwenden sie gerne diese Befehle von der eingabeaufforderung aus:
 
 ```cmd
 winget install Python.Python.3.13
 winget install git.git
 winget install github.cli
+winget install VaclavSlavik.Poedit
+winget install Microsoft.VisualStudioCode
 ```
 
 **Was passiert hier?**
 
 - `winget install ...` lädt das jeweilige Programm aus dem offiziellen Repository und installiert es mit Standardeinstellungen.  
-- Die Installation läuft ohne weitere Rückfragen („silent“).  
+- Die Installation läuft bis auf die Sicherheitsabfragen ohne weitere Rückfragen („silent“).  
 - Wenn Sie mehr Kontrolle möchten, können Sie `install` durch `download` ersetzen und die Installationsdateien manuell starten.
 
 Ein Rechner-Neustart nach der Installation ist empfehlenswert.
 
 ---
 
-## 2. GitHub-Konto erstellen
+### 1.2 GitHub-Konto erstellen und verbinden
 
-GitHub ist die Plattform, auf der Sie Ihr Add-on‑Projekt veröffentlichen und mit anderen teilen.
+GitHub ist die Plattform (hoster), auf der Sie Ihr Add-on‑Projekt veröffentlichen und mit anderen teilen.
 
 1. Öffnen Sie:  
-   `https://github.com/signup?source=login`  
+   [https://github.com/signup?source=login](https://github.com/signup?source=login)
 2. Folgen Sie den Schritten zur Kontoerstellung.  
-3. Merken Sie sich Ihren Benutzernamen und Ihr Passwort – beides wird später in der GitHub‑CLI benötigt.
+3. Merken Sie sich Ihren Benutzernamen und Ihr Passwort – beides wird  in der GitHub‑CLI benötigt.
 
 Moderne Browser können die englische Seite automatisch ins Deutsche übersetzen.
 
+#### GitHub anmelden
+
+Öffnen Sie die Eingabeaufforderung und geben Sie ein:
+
+```cmd
+gh auth login
+```
+
+**Was macht `gh auth login`?**
+
+- Startet den Anmeldeprozess für die GitHub‑CLI.  
+- Verknüpft Ihr lokales System mit Ihrem GitHub‑Konto.  
+- Danach kann `gh` in Ihrem Namen Repositories erstellen, Issues anlegen, Pull Requests öffnen usw.
+
+Typischer Ablauf in der CLI:
+
+- **What account do you want to log into?** → `GitHub.com`  
+- **What is your preferred protocol for Git operations?** → `HTTPS`  
+- **Authenticate Git with your GitHub credentials?** → `Yes`  
+- **How would you like to authenticate GitHub CLI?** → `Login with a web browser`  
+
+Dann:
+
+- Ein Code wird angezeigt (z. B. `ABCD-1234`).  
+- Sie drücken **Enter**, der Browser öffnet sich.  
+- Sie geben den Code ein und bestätigen.  
+- Sie wählen Ihr Konto aus und erlauben den Zugriff.
+
+Nach erfolgreicher Anmeldung:
+
+```text
+✓ Logged in as NVDAde
+```
+
 ---
 
-## 3. Lokales Repository anlegen
-
-Wir erstellen ein erstes Test‑Repository, um Git kennenzulernen.
-
-1. Legen Sie einen Ordner für Ihre GitHub‑Projekte an, z. B. `D:\MyGitHub`.  
-2. Erstellen Sie darin den Ordner `TestRepo`.  
-3. Öffnen Sie den Ordner im Explorer.  
-4. Drücken Sie **F4**, geben Sie `cmd` ein und bestätigen Sie.  
-5. Sie befinden sich nun in der Eingabeaufforderung:  
-   `D:\MyGitHub\TestRepo>`
-
-### Git-Identität konfigurieren
+### 1.3 Git-Identität konfigurieren
 
 Git speichert bei jedem Commit, **wer** ihn erstellt hat. Dazu braucht Git Ihren Namen und Ihre E‑Mail‑Adresse.
+
+Öffnen Sie die Eingabeaufforderung und geben Sie ein:
 
 ```cmd
 git config --global user.name "Ihr Name"
@@ -100,6 +138,46 @@ git config --global --list
 Dieser Befehl zeigt alle globalen Einstellungen an, darunter auch `user.name` und `user.email`.
 
 ---
+
+### 1.4 Python-Module und Gettext
+
+Wir müssen einige Module unter python installieren, um lokale NVDA-Addon-Pakete zu erstellen. 
+
+Geben Sie diese befehle in einer Eingabeaufforderung ein:
+
+```cmd
+python -m pip install --upgrade pip
+python -m pip install markdown
+python -m pip install scons
+```
+
+Nachdem das Python-Installer-Paket pip aktualisiert wurde und zwei Module installiert wurden, können wir jetzt noch die Gettext-Tools auf pfad setzen.
+
+Die Gettext-Tols werden benötigt, um die Lokalisierungstrings aus den py-Dateien in eine po-atei zu extrahieren und mehr.
+
+Es gibt mehrere möglichkeiten, an diese tools zu gelangen. Durch die Installation von Poedit sind diese schon auf Ihrem Rechner. Es muss nur noch der pfad zu den Tools in die Umgebungsvariable path aufgenommen werden.
+
+Wenn Sie  Poedit mit den Standard-Einstellungen installiert haben, ist der gesuchte Pfad dieser:
+"C:\Program Files\Poedit\GettextTools\bin"
+
+Startmenü öffnen, „Umgebungsvariablen“ tippen → „Systemumgebungsvariablen bearbeiten“
+
+Dort bei path den Pfad hinzufügen.
+
+Evtl. zum Testen in der eingabeaufforderung xgettext.exe eingeben. Die Datei sollte gefunden werden, egal wo Sie sich befinden.
+
+--- 
+
+## 2. Lokales Repository anlegen
+
+Wir erstellen ein erstes Test‑Repository (Projekt), um Git kennenzulernen.
+
+1. Legen Sie einen Ordner für Ihre GitHub‑Projekte an, z. B. `D:\MyGitHub`.  
+2. Erstellen Sie darin den Ordner `TestRepo`.  
+3. Öffnen Sie den Ordner `TestRepo` im Explorer.  
+4. Drücken Sie **F4**, geben Sie `cmd` ein und bestätigen Sie.  
+5. Sie befinden sich nun in der Eingabeaufforderung:  
+   `D:\MyGitHub\TestRepo>`
 
 ### Git-Repository initialisieren und bearbeiten
 
@@ -175,7 +253,7 @@ Typischer Ablauf:
 
 1. Datei bearbeiten oder neu erstellen  
 2. `git status` prüfen  
-3. `git add ...` ausführen  
+3. `git add .` ausführen  
 4. Wieder `git status` prüfen – die Datei sollte nun als „staged“ erscheinen
 
 ---
@@ -259,48 +337,14 @@ git help commit
 
 ---
 
-## 4. Repository auf GitHub hochladen
+## 3. Repository auf GitHub hochladen
 
 Bis jetzt existiert Ihr Projekt nur lokal.  
 Nun verbinden wir es mit GitHub, damit es online verfügbar ist.
 
-### GitHub anmelden
-
-```cmd
-gh auth login
-```
-
-**Was macht `gh auth login`?**
-
-- Startet den Anmeldeprozess für die GitHub‑CLI.  
-- Verknüpft Ihr lokales System mit Ihrem GitHub‑Konto.  
-- Danach kann `gh` in Ihrem Namen Repositories erstellen, Issues anlegen, Pull Requests öffnen usw.
-
-Typischer Ablauf in der CLI:
-
-- **What account do you want to log into?** → `GitHub.com`  
-- **What is your preferred protocol for Git operations?** → `HTTPS`  
-- **Authenticate Git with your GitHub credentials?** → `Yes`  
-- **How would you like to authenticate GitHub CLI?** → `Login with a web browser`  
-
-Dann:
-
-- Ein Code wird angezeigt (z. B. `ABCD-1234`).  
-- Sie drücken **Enter**, der Browser öffnet sich.  
-- Sie geben den Code ein und bestätigen.  
-- Sie wählen Ihr Konto aus und erlauben den Zugriff.
-
-Nach erfolgreicher Anmeldung:
-
-```text
-✓ Logged in as NVDAde
-```
-
----
-
 ### Neues GitHub-Repository erstellen
 
-Im Ordner `D:\MyGitHub\TestRepo`:
+Im Ordner `D:\MyGitHub\TestRepo` folgendes in der Eingabeaufforderung eingeben:
 
 ```cmd
 gh repo create TestRepo --public --source=. --remote=origin --push
@@ -377,9 +421,9 @@ git push
 
 ---
 
-## 5. NVDA-Add-on-Vorlage lokal einrichten
+## 4. NVDA-Add-on-Vorlage klonen
 
-NV Access stellt eine offizielle Add-on‑Vorlage bereit, die:
+NV Access stellt eine offizielle Add-on‑Vorlage (template) bereit, die:
 
 - die Grundstruktur eines Add-ons enthält,  
 - Skripte zum Bauen und Testen mitbringt,  
@@ -412,7 +456,7 @@ git log
 ```
 
 - `git status` zeigt den aktuellen Zustand (meist „clean“).  
-- `git log` zeigt die Historie der Vorlage.
+- `git log` zeigt die Geschichte der Vorlage.
 
 Lesen Sie unbedingt die `readme.md` im Template – dort wird die Struktur des Add-ons erklärt.
 
@@ -426,7 +470,7 @@ So laden Sie sich die kompletten Quellen von NVDA herunter.
 
 ---
 
-## 6. Die Vorlage mit Add-on-Code befüllen
+## 5. Die Vorlage mit Add-on-Code befüllen
 
 Jetzt beginnt die eigentliche Entwicklung.
 
@@ -490,7 +534,7 @@ class AppModule(appModuleHandler.AppModule):
 
 	@script(
 		# Translators: Description for the function to display the line number
-		description=_("Aktuelle Zeilennummer aus der Statusleiste ansagen"),
+		description=_("Announce current line number from the status bar"),
 		gesture="kb:control+shift+z",  # Tastenkombination: Strg+Umschalt+Z
 		speakOnDemand=True,  # Sprrechen, wenn "Sprachmodus bei Bedarf" steht 
 	)
@@ -537,23 +581,156 @@ class AppModule(appModuleHandler.AppModule):
 			ui.message(_("No status bar found."))
 ```
 
+Speichern Sie diesen Code in die Textdatei notepad.py im Format UTF8.
+
+Erstellen Sie sich eine Kopie von dem Ordner "addontemplate" und benennen Sie diesen um nach "MyFirstAppAddon". 
+
+Wechseln Sie nun in den Ordner "MyFirstAppAddon". und legen dort den Ordner "addon" an. Dort wiederum den Ordner "appModules" anlegen, weil wir ein Addon für eine Anwendung erstellen wollen. Also kopieren wir jetzt auch in diesen Ordner die notepad.py hinein.
+
+Jetzt öffnen wir die Datei: d:\MyGitHub\MyFirstAppAddon\buildVars.py
+
+Ändern Sie in der Datei `buildVars.py` die Variable `addoninfo` mit den Informationen Ihres Add-ons:
+- Name
+- Zusammenfassung
+- Was ist neu (darf Markdown sein)
+- Beschreibung
+- Version
+- Autor 
+- URL 
+- Quell-URL 
+- Lizenz
+- Lizenz-URL
+
+als Beispiel für name verwenden wir hier "myNotepad". 
+
+Stellen Sie außerdem sicher, dass Sie die Pfade in den anderen Variablen in dieser Datei sorgfältig festlegen. Wichtig ist hier die Zeile, 
+```python
+pythonSources: list[str] = []
+```
+Geben Sie hier die pfade zu Ihren py-Dateien an. Dies wird benötigt für die Erstellung der Lokalisierungsdateien. Das könnte so ausehen:
+```python
+pythonSources: list[str] = ["addon/appModules/*.py", "addon/globalPlugins/*.py"]
+```
+
+Wenn Sie sich eine funktionierende buildVars.py ansehen möchten, dann klonen Sie einfach ein bestehndes Addon. Die URL dazu finden Sie im NVDA Store.
+
+Die Datei changelog.md sollte enthalten, was in Ihrer aktuellen Version neu ist. 
+
+Die readme.md ist in englisch zu verfassen und sollte Ihr Handbuch zu Ihren addon beinhalten.
+
 ---
 
 ## 7. Ein lokales Add-on erstellen
 
-Dieser Abschnitt ist als nächster Schritt gedacht.
+### 7.1 Lokalisierung
 
----
+Wir kümmern uns nun um die Übersetzungen, wobei englisch als Vorlage gilt, weil wir das so im quellcode und in der Buildvars.ini festgelegt haben.
+
+wechseln Sie in Ihrem Addon-ordner in die Eingabeaufforderung und führen Sie aus:
+
+```batch
+scons pot 
+```
+
+es wird nun eine myNotepad.pot angelegt. Das ist eine Vorlage (template) für eine po-Datei. 
+
+Starten Sie nun den am Anfang installierten Poedit, wählen Sie im Datei-Menü "Neu aus POT-/PO-Datei", selektieren Sie die myNotepad.pot, legen Sie "Deutsch" als Sprache fest und übersetzen Sie die 8 einträge. Dabei ist darauf zu achten, dass die Zeichenketten in {Geschweiften Klammern} nicht zu übersetzen sind.
+
+Mit Strg+s die Datei als nvda.po an diesen ort speichern: D:\GitHub\MyFirstAddon\addon\locale\de\LC_MESSAGES
+
+### 7.2 Handhbuch 
+
+Ihr englisches Handbuch befindet sich in der readme.md direkt im Ordner myFirstAddon. Kopieren Sie dieses nach D:\GitHub\MyFirstAddon\addon\doc\de und übersetzen Sie es nach Deutsch.
+
+### 7.3 Das Addon bauen 
+
+wechseln Sie in Ihrem Addon-ordner in die Eingabeaufforderung und führen Sie aus:
+
+```batch
+scons
+```
+
+Sie erhalten nun eine Datei mit dem Namen myNotepad-2026.03.16.nvda-addon. Diese Datei können Sie nun mit einem Doppelklick im Explorer ausführen und sollten dann Ihr erstes Addon erfolgreich gebaut und installiert haben.
+
+Herzlichen Glückwunsch!
+
+beachten sie, das scons aus der nvda.po eine nvda.mo generiert hat, aus der readme.md eine readme.html erstellt wurde, das eine englische und eine deutsche manifest.ini generiert auftaucht und eine style.css für das layout kopiert wurde.
+
+### 7.4 Das Addon modifizieren
+
+Sie werden sicher im Laufe der zeit Ihre py-Dateien anpassen und ggf. neue zu lokalisierende Strings einbauen. Diese müssen dann auch in die jeweiligen vorhandenen nvda-po-Dateien Einzug halten.
+
+Es gibt mehrere Möglichkeiten, um dies zu realisieren:
+
+1. Händisch 
+
+Öffnen Sie die nvda.po mit poedit. Im Menü "Übersetzung" den Punkt Aus POT-Datei aktualisieren" auswählen. Die aktualisierte myNotepad.pot selektieren. Der Rest ist sprechend.
+
+2. Mit einer batch-Datei 
+
+Wenn Sie viele NVDA-po-Dateien haben, dann ist das recht aufwendig. Daher bedienen wir uns dieser batch-Datei:
+
+```cmd
+scons pot 
+For /R addon\locale\ %%f In (*.po) Do msgmerge -U --backup=none %%f myNotepad.pot
+```
+
+Wenn Sie nicht möchten, dass diese Batch-Datei in Ihr repo auf GitHub aufgenommen wird, dann fügen Sie den Batch-Dateinamen in die datei .gitignore hinzu.
 
 ## 8. Das Add-on einreichen
 
-Wenn das Add-on stabil läuft, folgt die Einreichung bei NV Access:
+Sie haben Ihr Addon lokal erstellt und ausführlich getestet.
 
-> Hier folgt noch eine Schritt‑für‑Schritt‑Anleitung zur Einreichung im NVDA Store.
+Jetzht muss alles noch auf GitHub hochgeladen und ein release eingepflegt werden, damit wir das Addon für den NVDA Store bei NV Access zur Einreichung anmelden können.
+
+Wir erstellen und verbinden einmalig das GitHub repo:
+
+```cmd
+gh repo create mynotepad --public --source=.
+git remote set-url origin https://github.com/bfw-wuerzburg/mynotepad.git
+```
+
+Die URL muss noch auf Ihren GitHub-Benutzer geändert werden.
+
+Jetzt fügen wir alle Dateien hinzu und erstellen  ein commit:
+
+```cmd
+git add . 
+git commit -m "First initialization"
+```
+
+Und jetzt einfach nur noch alles online stellen.
+
+```cmd
+git push 
+```
+
+Diese Befehle kann man auch in eine Batch-Datei schreiben.
+
+Jetzt ist unser Repo für alle sichtbar auf GitHub. Was fehlt, ist unser Addon als Herunterladbare Version auf gitHub, auf das der Store als Download zugreifen kann. Wir müssen also noch ein release wie folgt erstellen:
+
+```cmd
+gh release create 2026.03.16 myNotepad-2026.03.16.nvda-addon --title "myNotepad 2026.03.16" --notes "First Release"
+```
+
+Als Ausgabe wird die Download-URL angezeigt, die man sich notieren sollte.
+
+Noch zwei Befehle, die interessant sein könnten. Einmal die releases anzeigen und dann eines löschen:
+
+```cmd
+gh release list
+gh release delete 2026.03.16
+```
+
+So und jetzt müssen wir unser release einfach nur noch zum Einreichen in den NVDA Store anmelden.
+
+Auf dieser Website finden Sie [das Formullar zum Einreichen](https://github.com/nvaccess/addon-datastore/issues/new?assignees=nvaccess&labels=autoSubmissionFromIssue&projects=&template=registerAddon.yml&title=%5BSubmit+add-on%5D%3A+).
+
+Wenn Sie die Felder alle ausgefüllt und das Formular abgesendet haben, wird ein issue auf GitHub erstellt und jemand von Einreichungsteam wird sich darum kümmern Dies kann beim erstmaligen einreichen etwas dauern, weil genauer hingesehen wird. Wenn Sie erst als vertrauenswürdig eingestuft sind, dauert die Freigabe nur einige Minuten in der Regel. Auch wenn das issue geschlossen ist, wird Ihr Addon noch nicht gleich im NVDA Store auftauchen, das dauert in der Regel noch einige Stunden.
 
 ---
 
-## Zusätzliche Tipps und Links
+## 9. Zusätzliche Tipps und Links
 
 - [Entwickler-Leitfaden](https://download.nvaccess.org/documentation/developerGuide.html)
 - [entwickler-Wiki](https://github.com/nvdaaddons/DevGuide/wiki/NVDA-Add-on-Development-Guide)
