@@ -22,9 +22,9 @@ Vom Einrichten der Entwicklungsumgebung über das Erstellen eines GitHub‑Repos
   - [Wichtige GitHub-CLI-Befehle im Überblick](#wichtige-github-cli-befehle-im-überblick)  
 - [4. NVDA-Add-on-Vorlage klonen](#4-nvda-add-on-vorlage-klonen)  
 - [5. Die Vorlage mit Add-on-Code befüllen](#5-die-vorlage-mit-add-on-code-befüllen)  
-- [7. Ein lokales Add-on erstellen](#7-ein-lokales-add-on-erstellen)  
-- [8. Das Add-on einreichen](#8-das-add-on-einreichen)  
-- [9. Zusätzliche Tipps und Links](#zusätzliche-tipps-und-links)
+- [6. Ein lokales Add-on erstellen](#6-ein-lokales-add-on-erstellen)  
+- [7. Das Add-on einreichen](#7-das-add-on-einreichen)  
+- [8. Zusätzliche Tipps und Links](#8zusätzliche-tipps-und-links)
 
 ---
 
@@ -583,9 +583,20 @@ class AppModule(appModuleHandler.AppModule):
 
 Speichern Sie diesen Code in die Textdatei notepad.py im Format UTF8.
 
-Erstellen Sie sich eine Kopie von dem Ordner "addontemplate" und benennen Sie diesen um nach "MyFirstAppAddon". 
+Erstellen Sie einen ordner mit dem Namen "MyFirstAppAddon". 
 
-Wechseln Sie nun in den Ordner "MyFirstAppAddon". und legen dort den Ordner "addon" an. Dort wiederum den Ordner "appModules" anlegen, weil wir ein Addon für eine Anwendung erstellen wollen. Also kopieren wir jetzt auch in diesen Ordner die notepad.py hinein.
+Nun aus dem ordner "addontemplate" folgendes nach "MyFirstAppAddon"  kopieren:
+
+- site_scons
+- .gitattributes
+- .gitignore
+- buildVars
+- manifest.ini
+- manifest-translated.ini
+- readme.md- sconstruct
+- style
+
+Sie sind bereits im Ordner "MyFirstAppAddon". Legen Sie dort den Ordner "addon" an. Dort wiederum den Ordner "appModules" anlegen, weil wir ein Addon für eine Anwendung erstellen wollen. Also kopieren wir jetzt auch in diesen Ordner die notepad.py hinein.
 
 Jetzt öffnen wir die Datei: d:\MyGitHub\MyFirstAppAddon\buildVars.py
 
@@ -614,15 +625,13 @@ pythonSources: list[str] = ["addon/appModules/*.py", "addon/globalPlugins/*.py"]
 
 Wenn Sie sich eine funktionierende buildVars.py ansehen möchten, dann klonen Sie einfach ein bestehndes Addon. Die URL dazu finden Sie im NVDA Store.
 
-Die Datei changelog.md sollte enthalten, was in Ihrer aktuellen Version neu ist. 
-
 Die readme.md ist in englisch zu verfassen und sollte Ihr Handbuch zu Ihren addon beinhalten.
 
 ---
 
-## 7. Ein lokales Add-on erstellen
+## 6. Ein lokales Add-on erstellen
 
-### 7.1 Lokalisierung
+### 6.1 Lokalisierung
 
 Wir kümmern uns nun um die Übersetzungen, wobei englisch als Vorlage gilt, weil wir das so im quellcode und in der Buildvars.ini festgelegt haben.
 
@@ -638,11 +647,11 @@ Starten Sie nun den am Anfang installierten Poedit, wählen Sie im Datei-Menü "
 
 Mit Strg+s die Datei als nvda.po an diesen ort speichern: D:\GitHub\MyFirstAddon\addon\locale\de\LC_MESSAGES
 
-### 7.2 Handhbuch 
+### 6.2 Handbuch 
 
 Ihr englisches Handbuch befindet sich in der readme.md direkt im Ordner myFirstAddon. Kopieren Sie dieses nach D:\GitHub\MyFirstAddon\addon\doc\de und übersetzen Sie es nach Deutsch.
 
-### 7.3 Das Addon bauen 
+### 6.3 Das Addon bauen 
 
 wechseln Sie in Ihrem Addon-ordner in die Eingabeaufforderung und führen Sie aus:
 
@@ -650,13 +659,13 @@ wechseln Sie in Ihrem Addon-ordner in die Eingabeaufforderung und führen Sie au
 scons
 ```
 
-Sie erhalten nun eine Datei mit dem Namen myNotepad-2026.03.16.nvda-addon. Diese Datei können Sie nun mit einem Doppelklick im Explorer ausführen und sollten dann Ihr erstes Addon erfolgreich gebaut und installiert haben.
+Sie erhalten nun eine Datei mit einem Namen wie myNotepad-2026.03.16.nvda-addon. Diese Datei können Sie nun mit einem Doppelklick im Explorer ausführen und sollten dann Ihr erstes Addon erfolgreich gebaut und installiert haben.
 
 Herzlichen Glückwunsch!
 
 beachten sie, das scons aus der nvda.po eine nvda.mo generiert hat, aus der readme.md eine readme.html erstellt wurde, das eine englische und eine deutsche manifest.ini generiert auftaucht und eine style.css für das layout kopiert wurde.
 
-### 7.4 Das Addon modifizieren
+### 6.4 Das Addon modifizieren
 
 Sie werden sicher im Laufe der zeit Ihre py-Dateien anpassen und ggf. neue zu lokalisierende Strings einbauen. Diese müssen dann auch in die jeweiligen vorhandenen nvda-po-Dateien Einzug halten.
 
@@ -677,20 +686,24 @@ For /R addon\locale\ %%f In (*.po) Do msgmerge -U --backup=none %%f myNotepad.po
 
 Wenn Sie nicht möchten, dass diese Batch-Datei in Ihr repo auf GitHub aufgenommen wird, dann fügen Sie den Batch-Dateinamen in die datei .gitignore hinzu.
 
-## 8. Das Add-on einreichen
+## 7. Das Add-on einreichen
 
 Sie haben Ihr Addon lokal erstellt und ausführlich getestet.
 
 Jetzht muss alles noch auf GitHub hochgeladen und ein release eingepflegt werden, damit wir das Addon für den NVDA Store bei NV Access zur Einreichung anmelden können.
 
+Erst mal müssen wir einmalig unseren ordner als git ordner initialisieren:
+
+```cmd
+git init 
+```
+
 Wir erstellen und verbinden einmalig das GitHub repo:
 
 ```cmd
-gh repo create mynotepad --public --source=.
-git remote set-url origin https://github.com/bfw-wuerzburg/mynotepad.git
+gh repo create myNotepad --public --source=.
+git remote add origin https://github.com/BFW-Wuerzburg/myNotepad 
 ```
-
-Die URL muss noch auf Ihren GitHub-Benutzer geändert werden.
 
 Jetzt fügen wir alle Dateien hinzu und erstellen  ein commit:
 
@@ -713,9 +726,7 @@ Jetzt ist unser Repo für alle sichtbar auf GitHub. Was fehlt, ist unser Addon a
 gh release create 2026.03.16 myNotepad-2026.03.16.nvda-addon --title "myNotepad 2026.03.16" --notes "First Release"
 ```
 
-Als Ausgabe wird die Download-URL angezeigt, die man sich notieren sollte.
-
-Noch zwei Befehle, die interessant sein könnten. Einmal die releases anzeigen und dann eines löschen:
+Noch zwei Befehle, die interessant sein könnten. Einmal die releases anzeigen und dann ein release löschen:
 
 ```cmd
 gh release list
@@ -730,7 +741,7 @@ Wenn Sie die Felder alle ausgefüllt und das Formular abgesendet haben, wird ein
 
 ---
 
-## 9. Zusätzliche Tipps und Links
+## 8. Zusätzliche Tipps und Links
 
 - [Entwickler-Leitfaden](https://download.nvaccess.org/documentation/developerGuide.html)
 - [entwickler-Wiki](https://github.com/nvdaaddons/DevGuide/wiki/NVDA-Add-on-Development-Guide)
